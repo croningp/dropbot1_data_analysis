@@ -26,4 +26,8 @@ Link to figshare
 
 ## Video analysis and feature extraction
 
-Run the script ```analyse_all_videos.py``` in the ```feature_extraction``` folder. This script will store a ```features.json``` along each ```video.avi```. See [feature_extraction](feature_extraction) feature_extraction folder for more info.
+Run the script [analyse_all_videos.py](feature_extraction/analyse_all_videos.py) in the [feature_extraction](feature_extraction) folder. This script will store a ```features.json``` along each ```video.avi```. See [feature_extraction](feature_extraction) folder for more info.
+
+## Generating datasets
+
+Run the script [generate_datasets.py](datasets/generate_datasets.py) in the [datasets](datasets) folder. This script will collect all experiments from the ```data``` folder and compile them into easy to use csv files. See [datasets](datasets) folder for more info.
