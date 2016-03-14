@@ -2,7 +2,7 @@
 
 ##
 
-This set of tools has been tested under Python 2.7.6 on Ubuntu 14.04 LTS. Despite all our efforts, we cannot guarantee everything will be executable on other OS or python version.
+This set of tools has been tested under Python 2.7.6 on Ubuntu 14.04 LTS. Despite all our efforts, we cannot guarantee everything will be executable on other OS or Python version.
 
 ## Dependencies
 
