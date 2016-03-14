@@ -135,14 +135,6 @@ def save_dataset_info(dataset_info, foldername):
     save_list_to_csv(data_list, full_filename)
 
 
-def generate_folder_name(dataset_info):
-
-    fields = dataset_info[0]['x'].keys()
-    fields.extend(dataset_info[0]['y'].keys())
-
-    return '_'.join(fields)
-
-
 if __name__ == "__main__":
 
     dataset_folders = filetools.list_folders(DATA_FOLDER)
@@ -151,7 +143,7 @@ if __name__ == "__main__":
 
         dataset_info = gather_dataset_info(folder)
 
-        dataset_foldername = generate_folder_name(dataset_info)
+        dataset_foldername = os.path.split(folder)[1]
         filetools.ensure_dir(dataset_foldername)
 
         save_dataset_info(dataset_info, dataset_foldername)
