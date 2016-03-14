@@ -26,4 +26,4 @@ Link to figshare
 
 ## Video analysis and feature extraction
 
-Run the script ```analyse_all_videos.py``` in the ```feature_extration``` folder. This script will store a ```features.json``` along each ```video.avi```. A [REAMDE.md](feature_extraction/README.md) file is stored there giving more details.
+Run the script ```analyse_all_videos.py``` in the ```feature_extraction``` folder. This script will store a ```features.json``` along each ```video.avi```. See [feature_extraction](feature_extraction) feature_extraction folder for more info.
