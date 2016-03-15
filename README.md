@@ -6,6 +6,8 @@ This set of tools has been tested under Python 2.7.6 on Ubuntu 14.04 LTS. Despit
 
 ## Dependencies
 
+Aside from the standard libraries, we are using:
+
 - [opencv](http://opencv.org/): Image analysis with python binding.
 Version: cv2.__version__ is '2.4.8'
 
@@ -19,6 +21,8 @@ Version: scipy.__version__ is '0.16.1'
 See also: https://github.com/joblib/joblib
 Version: joblib.__version__ is '0.9.1'
 
+- [ternary](https://github.com/marcharper/python-ternary): Ternary plotting for python with matplotlib.
+Commit: 70ac90d44ffc88837fb7b5df701143b23c58b3a4
 
 ## Download the raw data
 

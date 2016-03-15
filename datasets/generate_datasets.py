@@ -11,8 +11,8 @@ DATA_FOLDER = os.path.join(HERE_PATH, '..', 'data')
 
 # adding parent directory to path, so we can access the utils easily
 import sys
-utils_path = os.path.join(HERE_PATH, '..')
-sys.path.append(utils_path)
+root_path = os.path.join(HERE_PATH, '..')
+sys.path.append(root_path)
 
 # filetools is a custom library that we provide here
 # this library can be found online at https://github.com/jgrizou/filetools

@@ -70,8 +70,8 @@ if __name__ == "__main__":
 
     # adding parent directory to path, so we can access the utils easily
     import sys
-    utils_path = os.path.join(here_path, '..')
-    sys.path.append(utils_path)
+    root_path = os.path.join(here_path, '..')
+    sys.path.append(root_path)
 
     # filetools is a custom library that we provide here
     # this library can be found online at https://github.com/jgrizou/filetools
