@@ -2,3 +2,5 @@
 *.pyc
 data
 models/regression/pickled
+models/regression/plot
+models/mixture/csv
