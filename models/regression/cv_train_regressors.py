@@ -15,7 +15,7 @@ root_path = os.path.join(HERE_PATH, '..', '..')
 sys.path.append(root_path)
 
 from utils import filetools
-from datasets.utils import load_dataset
+from datasets.tools import load_dataset
 
 
 def train_model(dataset_name, model_info, scoring='mean_squared_error', cv=10, n_jobs=multiprocessing.cpu_count()):

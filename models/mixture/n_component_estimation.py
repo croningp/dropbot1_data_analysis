@@ -14,7 +14,7 @@ root_path = os.path.join(HERE_PATH, '..', '..')
 sys.path.append(root_path)
 
 from utils import filetools
-from datasets.utils import load_dataset
+from datasets.tools import load_dataset
 
 
 def compare_gmm_model(X, n_components_range, cv_type='full'):
