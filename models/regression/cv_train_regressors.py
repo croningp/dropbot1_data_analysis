@@ -44,16 +44,10 @@ def save_model(clfs, filename):
     pickle.dump(clfs, open(filename, "wb"))
 
 
-def load_model(filename):
-    return pickle.load(open(filename))
-
-
 if __name__ == '__main__':
 
     save_folder = os.path.join(HERE_PATH, 'pickled')
     dataset_folder = os.path.join(HERE_PATH, '..', '..', 'datasets')
-
-    print save_folder
 
     datasets = filetools.list_folders(dataset_folder)
 
@@ -136,7 +130,6 @@ if __name__ == '__main__':
         clfs = train_model(dataset_name, model_info)
         pickled_filename = os.path.join(pickled_foldername, 'KernelRidge-RBF.pkl')
         save_model(clfs, pickled_filename)
-        save_model(clfs, './pickled/KernelRidge-RBF.p')
 
         model_info = {
             'estimator': KernelRidge(kernel='poly'),
