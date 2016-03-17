@@ -6,3 +6,4 @@ models/regression/plot
 models/mixture/csv
 models/mixture/plot
 models/mixture/pickled
+/models/regression/regressors_info.txt
