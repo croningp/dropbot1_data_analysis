@@ -20,7 +20,7 @@ from datasets.tools import load_dataset
 
 def train_model(dataset_name, model_info, scoring='mean_squared_error', cv=10, n_jobs=multiprocessing.cpu_count()):
 
-    (dataset_X, dataset_Y, dataset_info) = load_dataset(dataset_name)
+    (dataset_X, dataset_Y, dataset_info, dataset_path) = load_dataset(dataset_name)
 
     # we train one regressor per Y dimension, because most regression models do not handle multiple dimensions
     clfs = []

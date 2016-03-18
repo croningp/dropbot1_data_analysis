@@ -14,4 +14,6 @@ def load_dataset(dataset_name):
     y = np.loadtxt(os.path.join(dataset_folder, 'y.csv'))
     with open(os.path.join(dataset_folder, 'info.json')) as f:
         info = json.load(f)
-    return (x, y, info)
+    with open(os.path.join(dataset_folder, 'path.json')) as f:
+        path = json.load(f)
+    return x, y, info, path

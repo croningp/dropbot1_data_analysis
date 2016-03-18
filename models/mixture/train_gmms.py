@@ -84,7 +84,7 @@ if __name__ == '__main__':
         pickled_foldername = os.path.join(save_folder, dataset_name)
         filetools.ensure_dir(pickled_foldername)
 
-        (dataset_X, dataset_Y, dataset_info) = load_dataset(dataset_name)
+        (dataset_X, dataset_Y, dataset_info, dataset_path) = load_dataset(dataset_name)
 
         per_dim_n_component = []
         for i in range(dataset_Y.shape[1]):

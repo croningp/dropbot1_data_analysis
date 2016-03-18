@@ -68,7 +68,7 @@ if __name__ == '__main__':
         csv_foldername = os.path.join(save_folder, dataset_name)
         filetools.ensure_dir(csv_foldername)
 
-        (dataset_X, dataset_Y, dataset_info) = load_dataset(dataset_name)
+        (dataset_X, dataset_Y, dataset_info, dataset_path) = load_dataset(dataset_name)
         n_components_range = range(1, 101)
 
         # full model
