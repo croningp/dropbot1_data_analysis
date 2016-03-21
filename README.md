@@ -43,18 +43,23 @@ Run the script [analyse_all_videos.py](feature_extraction/analyse_all_videos.py)
 
 ## Generating datasets
 
-Run the script [generate_datasets.py](datasets/generate_datasets.py) in the [datasets](datasets) folder. This script will collect all experiments from the ```data``` folder and compile them into easy to use csv files. See [datasets](datasets) folder for more info.
+Run the script [generate_datasets.py](datasets/generate_datasets.py) in the [datasets](datasets) folder. This script will collect all experiments from the [data](data) folder and compile them into easy to use csv files. See [datasets](datasets) folder for more info.
 
 
 ## Regression
 
 Regression algorithms allow to fit a model on the datasets. We used state of the art, well established, regression algorithms implemented in the [sklearn](http://scikit-learn.org/) library.
 
-Run the script [cv_train_regressionn.py](models/regression/cv_train_regressors.py) in the [models/regression](models/regression/) folder. This script will select the best set of parameters for many different regression algorithm and store the best ones in ```models/regression/pickled/```. See [models/regression](models/regression/) folder for more info.
+Run the script [cv_train_regressionn.py](models/regression/cv_train_regressors.py) in the [models/regression](models/regression/) folder. This script will select the best set of parameters for many different regression algorithm and store the best ones in the [pickled](models/regression/pickled/) folder. See [models/regression](models/regression/) folder for more info.
 
+The script [plot_ternary.py](models/regression/plot_ternary.py) plots, for each regressors model, the heat maps of fitnesses given oils composition. They are stored in the [plot](models/regression/plot) folder.
+
+The script [print_regressors_info.py](models/regression/print_regressors_info.py) prints all the information about the regressors training and performances.
 
 ## Mixture
 
 Regression model we used cannot model the stochasticity of the data. A Gaussian Mixture Model (GMM) is more suited for that purpose.
 
-To train our GMM we first estimate the 'optimal' number of Gaussians to use. The script [n_component_estimation.py](models/mixture/n_component_estimation.py) estimate the [BIC](https://en.wikipedia.org/wiki/Bayesian_information_criterion) for models ranging from 1 to 100 Gaussians.
+We first estimate the 'optimal' number of Gaussians to use. The script [n_component_estimation.py](models/mixture/n_component_estimation.py) estimate the [BIC](https://en.wikipedia.org/wiki/Bayesian_information_criterion) for models ranging from 1 to 100 Gaussians. We estimate this for each dimension separately, as well as for all the dimension together. The result are stored  in  the  [csv](models/mixture/csv) folder. The [plot_bics.py](models/mixture/plot_bics.py) script subsequently plots the bic scores and stores them in the [plot/bics](models/mixture/plot/bics/) folder
+
+Then, given the bic scores, we select the number of Gaussians giving the lowest bic score and train the corresponding GMM. The script [train_gmms.py](models/mixture/train_gmms.py) does just that and store the resulting model in the [pickled](models/mixture/pickled/) folder.
