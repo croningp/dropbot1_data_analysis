@@ -8,3 +8,4 @@ models/mixture/plot
 models/mixture/pickled
 /models/regression/regressors_info.txt
 */.ipynb_checkpoints
+/ternary_trajectories/traj1/

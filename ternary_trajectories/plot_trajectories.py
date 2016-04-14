@@ -13,33 +13,25 @@ import sys
 root_path = os.path.join(HERE_PATH, '..')
 sys.path.append(root_path)
 
+from utils import filetools
 
-def sample_along_line(v, dims=[0, 1], n=11):
+
+def sample_between_two_points(v_start, v_end, n_segment=10):
     """
-    worst function ever, sorry
-    sample along a line in ternary plot
-    v can be any vector, e.g. [0, 0, 0.8, 0]
-    dims can only be two indexes
-    the function returns n vectors v eqully spaced by changing the two dims to value maitaining sum of v to one, e.g, if dims = [0,1] and n=3 the function returns [[0.2,0,0.8,0],[0.1,0.1,0.8,0],[0,0.2,0.8,0]]
-    really unclear!
+    v_start, v_end are vectors, e.g. [0, 0.2, 0, 0.8]
+    n is the number of segment, so n+1 point sampled
     """
 
-    kept_index = range(len(v))
-    kept_index.remove(dims[0])
-    kept_index.remove(dims[1])
-
-    missing_value_to_sum_one = 1.0 - np.array(v)[kept_index].sum()
-
-    space_up = np.linspace(0, missing_value_to_sum_one, n)
+    v_start = np.array(v_start)
+    v_end = np.array(v_end)
+    v = (v_end - v_start) / float(n_segment)
 
     out = []
-    for i, value in enumerate(space_up):
-        new_v = list(v)
-        new_v[dims[0]] = value
-        new_v[dims[1]] = missing_value_to_sum_one - value
-        out.append(new_v)
+    v_out = v_start
+    for i in range(n_segment + 1):
+        out.append(v_out)
+        v_out = v_out + v
 
-    # yeah really bad function
     return np.array(out)
 
 
@@ -80,7 +72,7 @@ def scatter_ternary_plot(points, axis_labels):
 def save_and_close_current_ternary(fig, tax, filename):
 
     # weird stuff to make it save the plot properly
-    # otherwise the acis label does not show
+    # otherwise the axis label does not show
     plt.show(block=False)
 
     # save
@@ -108,12 +100,12 @@ def plot_fitness(line_values, points_values, points_str):
     return fig
 
 
-def plot_fitness_from_model(info, v, variable_input_dim, n_points, n_lines, model, model_name, output_dim):
+def plot_fitness_from_model(info, v_start, v_end, n_points, n_lines, model, model_name, output_dim):
 
-    points = sample_along_line(v, variable_input_dim, n_points)
+    points = sample_between_two_points(v_start, v_end, n_points)
     points_values = model.predict(points, output_dim)
 
-    line_points = sample_along_line(v, variable_input_dim, n_lines)
+    line_points = sample_between_two_points(v_start, v_end, n_lines)
     line_values = model.predict(line_points, output_dim)
 
     points_str = [i.__str__() for i in points]
@@ -133,12 +125,25 @@ def save_and_close_current_figure(fig, filename):
     plt.close()
 
 
-def plot_ternary_and_save(info, v, variable_input_dim, n_points, plot_dims, filename):
-    points = sample_along_line(v, variable_input_dim, n_points)
+def plot_ternary_and_save(info, v_start, v_end, n_points, plot_dims, filename):
+    points = sample_between_two_points(v_start, v_end, n_points)
 
     points_for_plot, axis_labels_for_plot = extract_info_for_plot(points, info['x_keys'], plot_dims)
     fig, tax = scatter_ternary_plot(points_for_plot, axis_labels_for_plot)
     save_and_close_current_ternary(fig, tax, filename)
+
+
+def plot_traj(foldername, v_start, v_end, plot_dims, n_points, n_lines, model, model_name):
+
+    filetools.ensure_dir(foldername)
+
+    for output_dim, output_name in enumerate(info['y_keys']):
+        fig = plot_fitness_from_model(info, v_start, v_end, n_points, n_lines, model, model_name, output_dim)
+        filename = os.path.join(foldername, 'traj_{}.png'.format(output_name))
+        save_and_close_current_figure(fig, filename)
+
+    filename = os.path.join(foldername, 'traj_ternary.png')
+    plot_ternary_and_save(info, v_start, v_end, n_points, plot_dims, filename)
 
 
 if __name__ == '__main__':
@@ -179,31 +184,10 @@ if __name__ == '__main__':
     model_name = 'KernelRidge-RBF'
 
     #
-    v = [-1] * 4
-    v[octanol_dim] = 0
-    v[pentanol_dim] = 0.2
-    variable_input_dim = [dep_dim, octanoic_dim]
-
-    for output_dim, output_name in enumerate(info['y_keys']):
-        fig = plot_fitness_from_model(info, v, variable_input_dim, n_points, n_lines, model, model_name, output_dim)
-        filename = os.path.join(HERE_PATH, 'traj1_{}.png'.format(output_name))
-        save_and_close_current_figure(fig, filename)
-
-    plot_dims = [dep_dim, octanoic_dim, pentanol_dim]
-    filename = os.path.join(HERE_PATH, 'traj1_ternary.png')
-    plot_ternary_and_save(info, v, variable_input_dim, n_points, plot_dims, filename)
-
-    #
-    v = [-1] * 4
-    v[octanol_dim] = 0.15
-    v[octanoic_dim] = 0
-    variable_input_dim = [dep_dim, pentanol_dim]
-
-    for output_dim, output_name in enumerate(info['y_keys']):
-        fig = plot_fitness_from_model(info, v, variable_input_dim, n_points, n_lines, model, model_name, output_dim)
-        filename = os.path.join(HERE_PATH, 'traj2_{}.png'.format(output_name))
-        save_and_close_current_figure(fig, filename)
-
+    # ["dep", "octanol", "octanoic", "pentanol"]
+    v_start = [0, 0.15, 0, 0.85]
+    v_end = [0.85, 0.15, 0, 0]
     plot_dims = [dep_dim, octanol_dim, pentanol_dim]
-    filename = os.path.join(HERE_PATH, 'traj2_ternary.png')
-    plot_ternary_and_save(info, v, variable_input_dim, n_points, plot_dims, filename)
+    foldername = os.path.join(HERE_PATH, 'traj1')
+
+    plot_traj(foldername, v_start, v_end, plot_dims, n_points, n_lines, model, model_name)
