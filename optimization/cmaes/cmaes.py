@@ -121,10 +121,12 @@ if __name__ == '__main__':
         value = current_problem(my_input)
         return -value[0]
 
-    optimizer = CMAES(centroid=[5.0] * search_space_dims,
-                      sigma=10,
-                      lambda_=5 * search_space_dims,
-                      mu=1)
+    params = {'centroid': [5.0] * search_space_dims,
+              'sigma': 10,
+              'lambda_': 5 * search_space_dims,
+              'mu': 1}
+
+    optimizer = CMAES(**params)
 
     for i in xrange(60):
         pop = optimizer.get_next_population()
