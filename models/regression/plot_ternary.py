@@ -122,7 +122,7 @@ if __name__ == '__main__':
         plot_foldername = os.path.join(save_folder, dataset_name)
         pickled_foldername = os.path.join(pickled_folder, dataset_name)
 
-        (_, _, dataset_info) = load_dataset(dataset_name)
+        (_, _, dataset_info, _) = load_dataset(dataset_name)
 
         compound_names = dataset_info['x_keys']
         fitness_names = dataset_info['y_keys']
