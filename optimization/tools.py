@@ -69,4 +69,4 @@ class GridSearchEA(object):
                 self.best_score_ = mean_score
                 self.best_params_ = param_config
 
-        return self.best_params_
+        return self.best_params_, self.best_score_

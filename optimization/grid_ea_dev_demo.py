@@ -33,6 +33,6 @@ gridEA_param = {'optimizor': GA,
 
 gridEA = tools.GridSearchEA(**gridEA_param)
 
-best_params = gridEA.run()
+best_params, best_score = gridEA.run()
 
-print best_params
+print best_params, best_score
