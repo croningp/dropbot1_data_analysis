@@ -27,7 +27,7 @@ def proba_normalize(x):
 
 def problem_function(individual):
     # ["division", "directionality", "movement"]
-    outdim = 2  # we go for movement
+    outdim = 1  # we go for directionality
     x = np.clip(individual, 0, 1)
     x = proba_normalize(x)
     return model.predict(x, outdim)[0, 0]
@@ -63,7 +63,7 @@ if __name__ == '__main__':
     n_dim = 4
     pop_size = 20
     n_generation = 25
-    n_repeats = 10
+    n_repeats = 100
 
     ga_param_grid = {'pop_size': [pop_size],
                      'part_dim': [n_dim],
@@ -75,18 +75,18 @@ if __name__ == '__main__':
                      'temp': [0.1, 0.3, 0.5, 0.7, 1]}
 
     cmaes_param_grid = {'lambda_': [pop_size],  # population size
-                        'centroid': [[0.25, 0.25, 0.25, 0.25]],  # initial mean
+                        'centroid': [[0.5] * n_dim],  # initial mean
                         'sigma': [0.01, 0.05, 0.1, 0.5, 1],  # initial cov
-                        'mu': [1, 2, 3, 5, 10]}  # number of survivors
+                        'mu': [1, 2, 3, 5]}  # number of survivors
 
     pso_param_grid = {'pop_size': [pop_size],
                       'part_dim': [n_dim],
                       'pmin': [0],
                       'pmax': [1],
-                      'max_abs_speed': [0.01, 0.05, 0.1, 0.5, 1],
-                      'phi1': [0.5, 1, 1.5, 2, 2.5, 3],
-                      'phi2': [0.5, 1, 1.5, 2, 2.5, 3],
-                      'w_start': [0.5, 0.9, 1, 1.1, 1.5],
+                      'max_abs_speed': [0.01, 0.05, 0.1, 0.2],
+                      'phi1': [1, 1.5, 2],
+                      'phi2': [1, 1.5, 2],
+                      'w_start': [0.9, 1, 1.1],
                       'w_decay': [0.5, 0.9, 0.99, 1]}
 
     method_names = ['GA', 'CMAES', 'PSO']
@@ -112,10 +112,11 @@ if __name__ == '__main__':
 
             gridEA = tools.GridSearchEA(**gridsearch_param)
 
-            best_params = gridEA.run()
+            best_params, best_score = gridEA.run()
 
             # save
             filename = method_names[i] + '_' + scoring_names[j] + '.json'
             path = os.path.join(save_folder, filename)
 
-            save_json_to_file(best_params, path)
+            results = {'params': best_params, 'best_score': best_score}
+            save_json_to_file(results, path)
