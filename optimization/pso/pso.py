@@ -88,25 +88,31 @@ class PSO(object):
         self.gen += 1
 
     def update_w(self):
+        # update rule for w, inthis implementation we simply multiply at each generation with a decay
+        # you choose the decay but be smart don't make it above 1 or too low ;)
+        # typical values are 0.99, or 0.9
         self.w = self.w * self.w_decay
 
     def update_best(self):
+        # for ech particle
         for part in self.population:
+            # update best of that particle
             if not part.best or part.best.fitness < part.fitness:
                 part.best = creator.Particle(part)
                 part.best.fitness.values = part.fitness.values
+            # update overall best
             if not self.best or self.best.fitness < part.fitness:
                 self.best = creator.Particle(part)
                 self.best.fitness.values = part.fitness.values
 
     def update_particle(self, part):
-        # sample update weight
+        # sample update weights
         u1 = (random.uniform(0, self.phi1) for _ in range(len(part)))
         u2 = (random.uniform(0, self.phi2) for _ in range(len(part)))
         # compute speed updates
         v_u1 = map(operator.mul, u1, map(operator.sub, part.best, part))
         v_u2 = map(operator.mul, u2, map(operator.sub, self.best, part))
-        # apply updates (note self.w is use too here)
+        # apply updates (note self.w (the inertia) is use too here)
         part.speed = list(map(operator.add, map(operator.mul, [self.w] * self.part_dim, part.speed), map(operator.add, v_u1, v_u2)))
         # constrain speed within limits
         for i, speed in enumerate(part.speed):

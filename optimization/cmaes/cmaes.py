@@ -8,6 +8,11 @@ from deap import cma
 from deap import creator
 from deap import tools
 
+# wrapper to the cma class from deap, enabling to save at each step of the evolution
+# for explantion on the algorithm and input parameters refer to the implemetation of cmaes in deap
+# http://deap.readthedocs.org/en/master/examples/cmaes.html
+# https://github.com/DEAP/deap/blob/master/deap/cma.py
+
 
 class CMAES(cma.Strategy):
 

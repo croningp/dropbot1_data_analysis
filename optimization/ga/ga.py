@@ -47,8 +47,12 @@ def genome_crossover(genome1, genome2):
 
 def genome_mutation(genome, per_locus_rate, per_locus_SD):
     neonate = list(genome)
+    # for each dimension
     for i in range(len(neonate)):
+        # with per_locus_rate probability
         if random.random() < per_locus_rate:
+            # add a random noise to the gene value following a gaussian distribution
+            # of mean 0 and SD of per_locus_SD
             neonate[i] += random.gauss(0, per_locus_SD)
     return neonate
 
@@ -130,20 +134,28 @@ class GA(object):
         return fitnesses
 
     def update_population(self):
-        survivors_id = self.draw_survivors_id()
 
+        # we make the new population full of None so we are sure it crashes if we do not instanciate them all
         new_population = [self.generate_empty_genome() for _ in range(self.pop_size)]
 
+        survivors_id = self.draw_survivors_id()
         for i in range(len(new_population)):
+            # we keep survivors
             if i in survivors_id:
                 new_population[i] = self.population[i]
+            # and breed new childs
             else:
                 new_population[i] = self.breed_one_child()
 
         self.population = new_population
 
     def draw_survivors_id(self):
+        # survivors are smaple probabilisticaly wrt. their fitness
         fitnesses = self.get_fitnesses()
+        # the soft max allow to accentuate more or less the probabily distribution
+        # a high temperature make everything more flat, so even looser (less fit) have a chance
+        # a low temperatuee make everything sharp, so only the winner (more fit) have a chance
+        # temp is a parameter of the algortihm
         x = soft_max(fitnesses, self.temp)
 
         survivors_id = []
@@ -152,11 +164,13 @@ class GA(object):
             ind = probabilistic_choice(x)
 
             survivors_id.append(ind)
+            # remove the selected one by putting its proba to be selected to 0
             x[ind] = 0
 
         return survivors_id
 
     def breed_one_child(self):
+        # select 2 parents probabilistically base on their fitness and the softmax
         fitnesses = self.get_fitnesses()
         x = soft_max(fitnesses, self.temp)
 
@@ -167,9 +181,13 @@ class GA(object):
             parents.append(self.population[ind])
             x[ind] = 0
 
+        # cross the parents
         neonate = genome_crossover(parents[0], parents[1])
+        # mutate the child
         neonate = genome_mutation(neonate, self.per_locus_rate, self.per_locus_SD)
+        # clip genome within range
         neonate = self.clip_genome(neonate)
+        # make the genome a valid individual and return
         return creator.Individual(neonate)
 
     def clip_genome(self, genome):
