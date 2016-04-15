@@ -122,7 +122,6 @@ class PSO(object):
         # constrain value
         for i, value in enumerate(part):
             part[i] = float(numpy.clip(value, self.pmin, self.pmax))
-        raw_input()
 
     def update_population(self):
         self.update_best()

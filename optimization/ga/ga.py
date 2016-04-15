@@ -20,10 +20,10 @@ def probabilistic_choice(proba_distribution):
 
 
 def proba_normalize(x):
-    x = numpy.array(x)
+    x = numpy.array(x, dtype=float)
     if numpy.sum(x) == 0:
         x = numpy.ones(x.shape)
-    return list(x / numpy.sum(x))
+    return list(x / numpy.sum(x, dtype=float))
 
 
 def genome_crossover(genome1, genome2):
