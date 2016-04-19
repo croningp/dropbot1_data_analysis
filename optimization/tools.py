@@ -3,6 +3,58 @@ import numpy as np
 from sklearn.grid_search import ParameterGrid
 
 
+def run_multiple_ea_and_analyse(optimizator, param, problem_function, n_generation, n_repeats, fields=['avg', 'median', 'max', 'min']):
+
+    repeat_results = {}
+    for k in fields:
+        repeat_results[k] = []
+
+    for i in range(n_repeats):
+
+        logbook = run_ea(optimizator, param, problem_function, n_generation)
+
+        analysis_info = analyse_logbook(logbook)
+
+        for k in fields:
+            repeat_results[k].append(analysis_info[k])
+
+    collapsed_results = {}
+    for k in fields:
+        collapsed_results[k] = {}
+        collapsed_results[k]['mean'] = np.mean(repeat_results[k], axis=0)
+        collapsed_results[k]['std'] = np.std(repeat_results[k], axis=0)
+
+    return collapsed_results
+
+
+def run_ea(optimizator, param, problem_function, n_generation):
+
+    optimizer = optimizator(**param)
+
+    for _ in range(n_generation):
+        population = optimizer.get_next_population()
+
+        fitnesses = []
+        for individual in population:
+            fitnesses.append(problem_function(individual))
+        optimizer.set_fitness_value(fitnesses)
+
+    return optimizer.logbook
+
+
+def analyse_logbook(logbook, fields=['avg', 'median', 'max', 'min']):
+
+    results = {}
+    for k in fields:
+        results[k] = []
+
+    for i, log in enumerate(logbook):
+        for k in fields:
+            results[k].append(log[k])
+
+    return results
+
+
 class GridSearchEA(object):
 
     def __init__(self, optimizor, param_grid, problem_function, scoring_function, n_generation, n_repeats=100):

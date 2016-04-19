@@ -11,3 +11,4 @@ models/mixture/pickled
 /ternary_trajectories/traj1/
 /optimization/cmaes/test_cmaes_pickle_checkpoint.pkl
 /optimization/pickled
+/optimization/plot

@@ -33,6 +33,12 @@ def problem_function(individual):
     return model.predict(x, outdim)[0, 0]
 
 
+def scoring_function(logbook):
+    end_median = scoring_function_end_median(logbook)
+    integral_median = scoring_function_integral_median(logbook)
+    return (end_median + integral_median) / 2.0
+
+
 def scoring_function_end_max(logbook):
     return logbook[-1]['max']
 
@@ -77,7 +83,8 @@ if __name__ == '__main__':
     cmaes_param_grid = {'lambda_': [pop_size],  # population size
                         'centroid': [[0.5] * n_dim],  # initial mean
                         'sigma': [0.01, 0.05, 0.1, 0.5, 1],  # initial cov
-                        'mu': [1, 2, 3, 5]}  # number of survivors
+                        'mu': [1, 2, 3, 5],  # number of survivors
+                        'weights': ['superlinear', 'linear', 'equal']}  # decrease speed
 
     pso_param_grid = {'pop_size': [pop_size],
                       'part_dim': [n_dim],
@@ -93,20 +100,16 @@ if __name__ == '__main__':
     optimizators = [GA, CMAES, PSO]
     param_grids = [ga_param_grid, cmaes_param_grid, pso_param_grid]
 
-    scoring_names = ['max', 'median', 'integral']
-    scoring_functions = [scoring_function_end_max, scoring_function_end_median, scoring_function_integral_median]
-
     #
     save_folder = os.path.join(HERE_PATH, 'pickled')
     filetools.ensure_dir(save_folder)
 
     for i in range(len(method_names)):
-        for j in range(len(scoring_names)):
 
             gridsearch_param = {'optimizor': optimizators[i],
                                 'param_grid': param_grids[i],
                                 'problem_function': problem_function,
-                                'scoring_function': scoring_functions[j],
+                                'scoring_function': scoring_function,
                                 'n_generation': n_generation,
                                 'n_repeats': n_repeats}
 
@@ -115,8 +118,8 @@ if __name__ == '__main__':
             best_params, best_score = gridEA.run()
 
             # save
-            filename = method_names[i] + '_' + scoring_names[j] + '.json'
+            filename = method_names[i] + '_params.json'
             path = os.path.join(save_folder, filename)
 
-            results = {'params': best_params, 'best_score': best_score}
+            results = {'params': best_params, 'best_score': best_score, 'grid_scores': gridEA.grid_scores_}
             save_json_to_file(results, path)
