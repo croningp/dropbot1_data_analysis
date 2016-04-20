@@ -31,9 +31,25 @@ def proba_normalize(x):
     return x / np.sum(x, dtype=float)
 
 
-def problem_function(individual):
+def division_problem(individual):
+    # ["division", "directionality", "movement"]
+    outdim = 0  # we go for directionality
+    x = np.clip(individual, 0, 1)
+    x = proba_normalize(x)
+    return model.predict(x, outdim)[0, 0]
+
+
+def directionality_problem(individual):
     # ["division", "directionality", "movement"]
     outdim = 1  # we go for directionality
+    x = np.clip(individual, 0, 1)
+    x = proba_normalize(x)
+    return model.predict(x, outdim)[0, 0]
+
+
+def movement_problem(individual):
+    # ["division", "directionality", "movement"]
+    outdim = 2  # we go for movement
     x = np.clip(individual, 0, 1)
     x = proba_normalize(x)
     return model.predict(x, outdim)[0, 0]
@@ -79,50 +95,75 @@ if __name__ == '__main__':
     method_names = ['GA', 'CMAES', 'PSO']
     optimizators = [GA, CMAES, PSO]
 
-    plot_foldername = os.path.join(HERE_PATH, 'plot')
-    filetools.ensure_dir(plot_foldername)
+    root_plot_foldername = os.path.join(HERE_PATH, 'plot')
+    filetools.ensure_dir(root_plot_foldername)
 
-    results = {}
-    for i in range(len(method_names)):
+    param_foldername = os.path.join(HERE_PATH, 'pickled')
+    problem_folders = filetools.list_folders(param_foldername)
 
-        param_file = os.path.join(HERE_PATH, 'pickled', '{}_params.json'.format(method_names[i]))
-        param_info = load_json(param_file)
+    problem_names = ['division', 'directionality', 'movement']
+    problems = [division_problem, directionality_problem, movement_problem]
 
-        best_param = param_info['params']
+    for problem_folder in problem_folders:
 
-        results[method_names[i]] = tools.run_multiple_ea_and_analyse(optimizators[i], best_param, problem_function, n_generation, n_repeats)
+        problem_name = os.path.split(problem_folder)[1]
+        plot_foldername = os.path.join(root_plot_foldername, problem_name)
+        filetools.ensure_dir(plot_foldername)
 
-    fig = plot_results(results, method_names)
+        problem_ind = problem_names.index(problem_name)
+        problem_function = problems[problem_ind]
 
-    # save
-    plot_filename = os.path.join(plot_foldername, 'optimized_params.png')
+        results = {}
+        for i in range(len(method_names)):
 
-    plt.savefig(plot_filename, dpi=100)
-    plt.close()
+            param_file = os.path.join(problem_folder, '{}_params.json'.format(method_names[i]))
+            param_info = load_json(param_file)
 
-    ##
-    ga_param_file = os.path.join(HERE_PATH, 'pickled', 'GA_params.json')
-    ga_param_info = load_json(ga_param_file)
-    ga_param_optimized = ga_param_info['params']
+            best_param = param_info['params']
 
-    # note this is not exactly the GA used for the dropbot1 paper
-    # we have an improved version but the parameters below are the one the most similar to the intial setup
-    ga_param_dropbot1 = {'pop_size': 20,
-                         'part_dim': 4,
-                         'pmin': 0,
-                         'pmax': 1,
-                         'n_survivors': 12,  # was 15 out of 25, so 12 out of 20
-                         'per_locus_rate': 0.3,  # exactly the same
-                         'per_locus_SD': 0.1,  # exactly the same
-                         'temp': 1}  # was not a softmax but a roulette algortihm, so was relatively smooth/flat selection
+            results[method_names[i]] = tools.run_multiple_ea_and_analyse(optimizators[i], best_param, problem_function, n_generation, n_repeats)
 
-    results = {}
-    results['GA_opt'] = tools.run_multiple_ea_and_analyse(GA, ga_param_optimized, problem_function, n_generation, n_repeats)
-    results['GA_origin'] = tools.run_multiple_ea_and_analyse(GA, ga_param_dropbot1, problem_function, n_generation, n_repeats)
+        fig = plot_results(results, method_names)
 
-    fig = plot_results(results, ['GA_opt', 'GA_origin'])
+        # save
+        plot_filename = os.path.join(plot_foldername, 'optimized_params.png')
 
-    plot_filename = os.path.join(plot_foldername, 'ga_comparison.png')
+        plt.savefig(plot_filename, dpi=100)
+        plt.close()
 
-    plt.savefig(plot_filename, dpi=100)
-    plt.close()
+        ##
+        from ga.ga_dropbot1 import GA_DROPBOT1
+
+        ga_param_file = os.path.join(problem_folder, 'GA_params.json')
+        ga_param_info = load_json(ga_param_file)
+        ga_param_optimized = ga_param_info['params']
+
+        # the parameters below are the one the most similar to the intial setup
+        ga_param_dropbot1 = {'pop_size': 20,
+                             'part_dim': 4,
+                             'pmin': 0,
+                             'pmax': 1,
+                             'n_survivors': 12,  # was 15 out of 25, so 12 out of 20
+                             'per_locus_rate': 0.3,  # exactly the same
+                             'per_locus_SD': 0.1}  # exactly the same
+
+        ga_param_dropbot1_softmax = {'pop_size': 20,
+                                     'part_dim': 4,
+                                     'pmin': 0,
+                                     'pmax': 1,
+                                     'n_survivors': 12,  # was 15 out of 25, so 12 out of 20
+                                     'per_locus_rate': 0.3,  # exactly the same
+                                     'per_locus_SD': 0.1,  # exactly the same
+                                     'temp': 1}  # default temperature value for softmax
+
+        results = {}
+        results['GA_optimized'] = tools.run_multiple_ea_and_analyse(GA, ga_param_optimized, problem_function, n_generation, n_repeats)
+        results['GA_origin_softmax'] = tools.run_multiple_ea_and_analyse(GA, ga_param_dropbot1, problem_function, n_generation, n_repeats)
+        results['GA_origin'] = tools.run_multiple_ea_and_analyse(GA_DROPBOT1, ga_param_dropbot1, problem_function, n_generation, n_repeats)
+
+        fig = plot_results(results, ['GA_optimized', 'GA_origin_softmax', 'GA_origin'])
+
+        plot_filename = os.path.join(plot_foldername, 'ga_comparison.png')
+
+        plt.savefig(plot_filename, dpi=100)
+        plt.close()
