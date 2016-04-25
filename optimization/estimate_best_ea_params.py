@@ -77,69 +77,76 @@ def save_json_to_file(data, filename):
 
 if __name__ == '__main__':
 
+    import sys
+    if len(sys.argv) > 1:
+        n_repeats = int(sys.argv[1])
+    else:
+        n_repeats = 100
+
     from ga.ga import GA
     from cmaes.cmaes import CMAES
     from pso.pso import PSO
 
     import tools
 
-    n_dim = 4
-    pop_size = 20
-    n_generation = 25
-    n_repeats = 100
-
-    ga_param_grid = {'pop_size': [pop_size],
-                     'part_dim': [n_dim],
-                     'pmin': [0],
-                     'pmax': [1],
-                     'n_survivors': [2, 3, 5],
-                     'per_locus_rate': [0.1, 0.2, 0.3, 0.5],
-                     'per_locus_SD': [0.01, 0.05, 0.1, 0.5, 1],
-                     'temp': [0.1, 0.3, 0.5, 0.7, 1]}
-
-    cmaes_param_grid = {'lambda_': [pop_size],  # population size
-                        'centroid': [[0.5] * n_dim],  # initial mean
-                        'sigma': [0.01, 0.05, 0.1, 0.5, 1],  # initial cov
-                        'mu': [1, 2, 3, 5],  # number of survivors
-                        'weights': ['superlinear', 'linear', 'equal']}  # decrease speed
-
-    pso_param_grid = {'pop_size': [pop_size],
-                      'part_dim': [n_dim],
-                      'pmin': [0],
-                      'pmax': [1],
-                      'max_abs_speed': [0.01, 0.05, 0.1, 0.2],
-                      'phi1': [1, 1.5, 2],
-                      'phi2': [1, 1.5, 2],
-                      'w_start': [0.9, 1, 1.1],
-                      'w_decay': [0.5, 0.9, 0.99, 1]}
-
-    method_names = ['GA', 'CMAES', 'PSO']
-    optimizators = [GA, CMAES, PSO]
-    param_grids = [ga_param_grid, cmaes_param_grid, pso_param_grid]
-
-    problem_names = ['division', 'directionality', 'movement']
-    problems = [division_problem, directionality_problem, movement_problem]
-
-    #
     save_folder = os.path.join(HERE_PATH, 'pickled')
     filetools.ensure_dir(save_folder)
 
-    for i in range(len(method_names)):
-        for j in range(len(problem_names)):
-            gridsearch_param = {'optimizor': optimizators[i],
-                                'param_grid': param_grids[i],
-                                'problem_function': problems[j],
-                                'scoring_function': scoring_function,
-                                'n_generation': n_generation,
-                                'n_repeats': n_repeats}
+    n_dim = 4
+    n_experiments = 500
 
-            gridEA = tools.GridSearchEA(**gridsearch_param)
+    for pop_size in [5, 10, 20]:
 
-            best_params, best_score = gridEA.run()
+        n_generation = n_experiments / pop_size
 
-            # save
-            filename = method_names[i] + '_params.json'
-            path = os.path.join(save_folder, problem_names[j], filename)
+        ga_param_grid = {'pop_size': [pop_size],
+                         'part_dim': [n_dim],
+                         'pmin': [0],
+                         'pmax': [1],
+                         'n_survivors': [2, 3, 5],
+                         'per_locus_rate': [0.1, 0.2, 0.3, 0.5],
+                         'per_locus_SD': [0.01, 0.05, 0.1, 0.5, 1],
+                         'temp': [0.1, 0.3, 0.5, 0.7, 1]}
 
-            results = {'params': best_params, 'best_score': best_score, 'grid_scores': gridEA.grid_scores_}
-            save_json_to_file(results, path)
+        cmaes_param_grid = {'lambda_': [pop_size],  # population size
+                            'centroid': [[0.5] * n_dim],  # initial mean
+                            'sigma': [0.01, 0.05, 0.1, 0.5, 1],  # initial cov
+                            'weights': ['superlinear', 'linear', 'equal']}  # decrease speed
+
+        pso_param_grid = {'pop_size': [pop_size],
+                          'part_dim': [n_dim],
+                          'pmin': [0],
+                          'pmax': [1],
+                          'max_abs_speed': [0.01, 0.05, 0.1, 0.2],
+                          'phi1': [1, 1.5, 2],
+                          'phi2': [1, 1.5, 2],
+                          'w_start': [0.9, 1, 1.1],
+                          'w_decay': [0.5, 0.9, 0.99, 1]}
+
+        method_names = ['GA', 'CMAES', 'PSO']
+        optimizators = [GA, CMAES, PSO]
+        param_grids = [ga_param_grid, cmaes_param_grid, pso_param_grid]
+
+        problem_names = ['division', 'directionality', 'movement']
+        problems = [division_problem, directionality_problem, movement_problem]
+
+        for i in range(len(method_names)):
+            for j in range(len(problem_names)):
+                gridsearch_param = {'optimizor': optimizators[i],
+                                    'param_grid': param_grids[i],
+                                    'problem_function': problems[j],
+                                    'scoring_function': scoring_function,
+                                    'n_generation': n_generation,
+                                    'n_repeats': n_repeats}
+
+                gridEA = tools.GridSearchEA(**gridsearch_param)
+
+                best_params, best_score = gridEA.run()
+
+                # save
+                pop_size_str = 'pop_{}'.format(pop_size)
+                filename = method_names[i] + '_params.json'
+                path = os.path.join(save_folder, pop_size_str, problem_names[j], filename)
+
+                results = {'params': best_params, 'best_score': best_score, 'grid_scores': gridEA.grid_scores_}
+                save_json_to_file(results, path)

@@ -60,14 +60,14 @@ def load_json(filename):
         return json.load(f)
 
 
-def plot_results(results, method_names):
+def plot_results(results, method_names, n_repeats):
 
     fig = plt.figure(figsize=(12, 8))
 
     for i in range(len(method_names)):
         method_results = results[method_names[i]]
         y = method_results['median']['mean']
-        yerr = method_results['median']['std']
+        yerr = method_results['median']['std'] / np.sqrt(n_repeats)
         x = range(1, len(y) + 1)
         plt.errorbar(x, y, yerr=yerr, linewidth=2)
 
@@ -75,7 +75,7 @@ def plot_results(results, method_names):
 
     plt.xlabel('Generation number')
     plt.ylabel('Fitness value')
-    plt.legend(method_names, bbox_to_anchor=(1, 0.5))
+    plt.legend(method_names, bbox_to_anchor=(1, 0.35))
     plt.tight_layout()
 
     return fig
@@ -83,23 +83,29 @@ def plot_results(results, method_names):
 
 if __name__ == '__main__':
 
+    import sys
+    if len(sys.argv) > 1:
+        n_repeats = int(sys.argv[1])
+    else:
+        n_repeats = 100
+
     from ga.ga import GA
-    from cmaes.cmaes import CMAES
-    from pso.pso import PSO
 
     import tools
 
-    n_generation = 25
-    n_repeats = 100
-
-    method_names = ['GA', 'CMAES', 'PSO']
-    optimizators = [GA, CMAES, PSO]
+    n_experiments = 500
+    pop_size = 20
+    n_generation = n_experiments / pop_size
 
     root_plot_foldername = os.path.join(HERE_PATH, 'plot')
     filetools.ensure_dir(root_plot_foldername)
 
     param_foldername = os.path.join(HERE_PATH, 'pickled')
-    problem_folders = filetools.list_folders(param_foldername)
+
+    pop_size_foldername = 'pop_{}'.format(pop_size)
+    pop_size_folder = os.path.join(param_foldername, pop_size_foldername)
+
+    problem_folders = filetools.list_folders(pop_size_folder)
 
     problem_names = ['division', 'directionality', 'movement']
     problems = [division_problem, directionality_problem, movement_problem]
@@ -107,29 +113,11 @@ if __name__ == '__main__':
     for problem_folder in problem_folders:
 
         problem_name = os.path.split(problem_folder)[1]
-        plot_foldername = os.path.join(root_plot_foldername, problem_name)
+        plot_foldername = os.path.join(root_plot_foldername)
         filetools.ensure_dir(plot_foldername)
 
         problem_ind = problem_names.index(problem_name)
         problem_function = problems[problem_ind]
-
-        results = {}
-        for i in range(len(method_names)):
-
-            param_file = os.path.join(problem_folder, '{}_params.json'.format(method_names[i]))
-            param_info = load_json(param_file)
-
-            best_param = param_info['params']
-
-            results[method_names[i]] = tools.run_multiple_ea_and_analyse(optimizators[i], best_param, problem_function, n_generation, n_repeats)
-
-        fig = plot_results(results, method_names)
-
-        # save
-        plot_filename = os.path.join(plot_foldername, 'optimized_params.png')
-
-        plt.savefig(plot_filename, dpi=100)
-        plt.close()
 
         ##
         from ga.ga_dropbot1 import GA_DROPBOT1
@@ -161,9 +149,9 @@ if __name__ == '__main__':
         results['GA_origin_softmax'] = tools.run_multiple_ea_and_analyse(GA, ga_param_dropbot1, problem_function, n_generation, n_repeats)
         results['GA_origin'] = tools.run_multiple_ea_and_analyse(GA_DROPBOT1, ga_param_dropbot1, problem_function, n_generation, n_repeats)
 
-        fig = plot_results(results, ['GA_optimized', 'GA_origin_softmax', 'GA_origin'])
+        fig = plot_results(results, ['GA_optimized', 'GA_origin_softmax', 'GA_origin'], n_repeats)
 
-        plot_filename = os.path.join(plot_foldername, 'ga_comparison.png')
+        plot_filename = os.path.join(plot_foldername, 'ga_comparison_{}.png'.format(problem_name))
 
         plt.savefig(plot_filename, dpi=100)
         plt.close()

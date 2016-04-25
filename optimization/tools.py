@@ -55,6 +55,30 @@ def analyse_logbook(logbook, fields=['avg', 'median', 'max', 'min']):
     return results
 
 
+def run_multiple_ea_and_concatenate_fitnesses(optimizator, param, problem_function, n_generation, n_repeats):
+
+    concatenated_fitnesses = []
+
+    for i in range(n_repeats):
+
+        logbook = run_ea(optimizator, param, problem_function, n_generation)
+
+        fitnesses = concatenate_fitnesses(logbook)
+
+        concatenated_fitnesses.append(fitnesses)
+
+    return concatenated_fitnesses
+
+
+def concatenate_fitnesses(logbook):
+
+    fitnesses = []
+    for i, log in enumerate(logbook):
+        for fitness in log['fitnesses']:
+            fitnesses.append(fitness)
+    return fitnesses
+
+
 class GridSearchEA(object):
 
     def __init__(self, optimizor, param_grid, problem_function, scoring_function, n_generation, n_repeats=100):
