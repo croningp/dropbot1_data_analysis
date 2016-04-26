@@ -132,21 +132,26 @@ if __name__ == '__main__':
 
         for i in range(len(method_names)):
             for j in range(len(problem_names)):
-                gridsearch_param = {'optimizor': optimizators[i],
-                                    'param_grid': param_grids[i],
-                                    'problem_function': problems[j],
-                                    'scoring_function': scoring_function,
-                                    'n_generation': n_generation,
-                                    'n_repeats': n_repeats}
 
-                gridEA = tools.GridSearchEA(**gridsearch_param)
-
-                best_params, best_score = gridEA.run()
-
-                # save
                 pop_size_str = 'pop_{}'.format(pop_size)
                 filename = method_names[i] + '_params.json'
-                path = os.path.join(save_folder, pop_size_str, problem_names[j], filename)
+                save_path = os.path.join(save_folder, pop_size_str, problem_names[j], filename)
 
-                results = {'params': best_params, 'best_score': best_score, 'grid_scores': gridEA.grid_scores_}
-                save_json_to_file(results, path)
+                if not os.path.exists(save_path):
+                    gridsearch_param = {'optimizor': optimizators[i],
+                                        'param_grid': param_grids[i],
+                                        'problem_function': problems[j],
+                                        'scoring_function': scoring_function,
+                                        'n_generation': n_generation,
+                                        'n_repeats': n_repeats}
+
+                    gridEA = tools.GridSearchEA(**gridsearch_param)
+
+                    best_params, best_score = gridEA.run()
+
+                    # save
+                    results = {'params': best_params, 'best_score': best_score, 'grid_scores': gridEA.grid_scores_}
+                    save_json_to_file(results, save_path)
+
+                else:
+                    print '###\n[{}, {}, {}] already done, please delete this file to run again: {}'.format(pop_size_str, method_names[i], problem_names[j], save_path)
