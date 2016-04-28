@@ -12,4 +12,4 @@ fi
 python estimate_best_ea_params.py $nrepeats
 python plot_ea_methods_comparison.py $nrepeats
 python plot_GA_comparison.py $nrepeats
-python plot_cmaes_comparison.py $nrepeats
+python plot_pop_comparison.py $nrepeats

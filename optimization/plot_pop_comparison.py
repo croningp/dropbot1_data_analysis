@@ -76,7 +76,7 @@ def plot_results(results, pop_sizes, n_repeats):
 
     plt.xlim([0, x[-1] + 1])
 
-    plt.xlabel('Generation number')
+    plt.xlabel('Experiment number')
     plt.ylabel('Fitness value')
     legend_name = ['pop_{}'.format(p) for p in pop_sizes]
     plt.legend(legend_name, bbox_to_anchor=(1, 0.35))
@@ -93,7 +93,9 @@ if __name__ == '__main__':
     else:
         n_repeats = 100
 
+    from ga.ga import GA
     from cmaes.cmaes import CMAES
+    from pso.pso import PSO
 
     import tools
 
@@ -105,39 +107,47 @@ if __name__ == '__main__':
     root_plot_foldername = os.path.join(HERE_PATH, 'plot')
     filetools.ensure_dir(root_plot_foldername)
 
-    for i in range(len(problem_names)):
+    method_names = ['GA', 'CMAES', 'PSO']
+    optimizators = [GA, CMAES, PSO]
 
-        problem_name = problem_names[i]
-        problem_function = problems[i]
+    for method_ind in range(len(method_names)):
 
-        pop_sizes = [5, 10, 20]
+        method_name = method_names[method_ind]
+        optimizator = optimizators[method_ind]
 
-        results = []
-        for pop_size in pop_sizes:
+        for i in range(len(problem_names)):
 
-            n_generation = n_experiments / pop_size
+            problem_name = problem_names[i]
+            problem_function = problems[i]
 
-            ##
-            param_foldername = os.path.join(HERE_PATH, 'pickled')
+            pop_sizes = [5, 10, 20]
 
-            pop_size_foldername = 'pop_{}'.format(pop_size)
-            pop_size_folder = os.path.join(param_foldername, pop_size_foldername)
+            results = []
+            for pop_size in pop_sizes:
 
-            ##
-            param_file = os.path.join(pop_size_folder, problem_name, 'CMAES_params.json')
-            param_info = load_json(param_file)
+                n_generation = n_experiments / pop_size
 
-            best_param = param_info['params']
+                ##
+                param_foldername = os.path.join(HERE_PATH, 'pickled')
 
-            results.append(tools.run_multiple_ea_and_concatenate_fitnesses(CMAES, best_param, problem_function, n_generation, n_repeats))
+                pop_size_foldername = 'pop_{}'.format(pop_size)
+                pop_size_folder = os.path.join(param_foldername, pop_size_foldername)
 
-        fig = plot_results(results, pop_sizes, n_repeats)
+                ##
+                param_file = os.path.join(pop_size_folder, problem_name, '{}_params.json'.format(method_name))
+                param_info = load_json(param_file)
 
-        # save
-        plot_foldername = os.path.join(root_plot_foldername)
-        filetools.ensure_dir(plot_foldername)
+                best_param = param_info['params']
 
-        plot_filename = os.path.join(plot_foldername, 'cmaes_comparison_{}.png'.format(problem_name))
+                results.append(tools.run_multiple_ea_and_concatenate_fitnesses(optimizator, best_param, problem_function, n_generation, n_repeats))
 
-        plt.savefig(plot_filename, dpi=100)
-        plt.close()
+            fig = plot_results(results, pop_sizes, n_repeats)
+
+            # save
+            plot_foldername = os.path.join(root_plot_foldername, 'pop_comparison')
+            filetools.ensure_dir(plot_foldername)
+
+            plot_filename = os.path.join(plot_foldername, '{}_{}.png'.format(method_name, problem_name))
+
+            plt.savefig(plot_filename, dpi=100)
+            plt.close()
