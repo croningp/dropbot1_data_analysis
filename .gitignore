@@ -12,3 +12,4 @@ models/mixture/pickled
 /optimization/cmaes/test_cmaes_pickle_checkpoint.pkl
 /optimization/pickled
 /optimization/plot
+/optimization/json
