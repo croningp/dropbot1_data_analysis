@@ -13,3 +13,6 @@ models/mixture/pickled
 /optimization/pickled
 /optimization/plot
 /optimization/json
+*.eps
+*.png
+*.svg

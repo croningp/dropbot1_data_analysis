@@ -30,6 +30,9 @@ Version: joblib.__version__ is '0.9.1'
 - [ternary](https://github.com/marcharper/python-ternary): Ternary plotting for python with matplotlib.
 Commit: 70ac90d44ffc88837fb7b5df701143b23c58b3a4
 
+- [seaborn](https://github.com/mwaskom/seaborn): Statistical data visualization using matplotlib.
+Version: seaborn.__version__ is '0.7.0'
+
 - [jupyter notebook](http://jupyter.org/): Interactive data science and scientific computing.
 Version: jupyter --version is 4.0.6
 
