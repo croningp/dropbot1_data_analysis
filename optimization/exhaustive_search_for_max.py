@@ -69,9 +69,9 @@ if __name__ == '__main__':
     best_movement = -movement_problem(x0_movement)
 
     results = {}
-    results['directionality'] = best_directionality
-    results['division'] = best_division
-    results['movement'] = best_movement
+    results['directionality'] = (list(proba_normalize(x0_directionality)), best_directionality)
+    results['division'] = (list(proba_normalize(x0_division)), best_division)
+    results['movement'] = (list(proba_normalize(x0_movement)), best_movement)
 
     # save
     save_path = os.path.join(HERE_PATH, 'json')

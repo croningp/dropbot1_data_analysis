@@ -108,7 +108,7 @@ def plot_fitness_from_model(info, v_start, v_end, n_points, n_lines, model, mode
     line_points = sample_between_two_points(v_start, v_end, n_lines)
     line_values = model.predict(line_points, output_dim)
 
-    points_str = [i.__str__() for i in points]
+    points_str = [np.round(i, 2).__str__() for i in points]
     fig = plot_fitness(line_values, points_values, points_str)
     plt.title(model_name + '  :  ' + info['x_keys'].__str__())
     plt.ylabel(info['y_keys'][output_dim])
@@ -189,5 +189,17 @@ if __name__ == '__main__':
     v_end = [0.85, 0.15, 0, 0]
     plot_dims = [dep_dim, octanol_dim, pentanol_dim]
     foldername = os.path.join(HERE_PATH, 'traj1')
+
+    plot_traj(foldername, v_start, v_end, plot_dims, n_points, n_lines, model, model_name)
+
+    # ["dep", "octanol", "octanoic", "pentanol"]
+    best_division = [0.782, 0.112, 0, 0.106]
+    best_directionality = [0, 0.527, 0.242, 0.231]
+    best_movement = [0.175, 0.802, 0.014, 0.009]
+
+    v_start = best_division
+    v_end = best_directionality
+    plot_dims = [dep_dim, octanol_dim, pentanol_dim]
+    foldername = os.path.join(HERE_PATH, 'traj2')
 
     plot_traj(foldername, v_start, v_end, plot_dims, n_points, n_lines, model, model_name)
