@@ -66,6 +66,11 @@ if __name__ == '__main__':
     problem_folder = os.path.join(pop_size_folder, 'directionality')
     problem_function = directionality_problem
 
+    json_foldername = os.path.join(root_path, 'optimization', 'json')
+    brute_force_file = os.path.join(json_foldername, 'brute_force_max.json')
+    brute_force_data = load_json(brute_force_file)
+    brute_force_max_directionality = brute_force_data['directionality'][1]
+
     # optimized GA param
     ga_param_file = os.path.join(problem_folder, 'GA_params.json')
     ga_param_info = load_json(ga_param_file)
@@ -102,6 +107,7 @@ if __name__ == '__main__':
     matplotlib.rcParams.update({'font.size': fontsize})
 
     fig = plt.figure(figsize=(12, 8))
+    ax = fig.add_subplot(111)
 
     method_names = ['GA_optimized', 'GA_origin_softmax', 'GA_origin']
     for i in range(len(results)):
@@ -111,7 +117,12 @@ if __name__ == '__main__':
         x = range(1, len(y) + 1)
         plt.errorbar(x, y, yerr=yerr, linewidth=2)
 
+    plt.plot([0, x[-1] + 1], [brute_force_max_directionality, brute_force_max_directionality], color='grey', linestyle='--')
+    text = 'Max achievable: ' + str(round(brute_force_max_directionality, 2))
+    ax.text(0.1, 7.9, text, color='grey', fontsize=15)
+
     plt.xlim([0, x[-1] + 1])
+    plt.ylim([4, 8.5])
 
     plt.xlabel('Generation number', fontsize=fontsize)
     plt.ylabel('Fitness value', fontsize=fontsize)

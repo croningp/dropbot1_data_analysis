@@ -58,6 +58,11 @@ if __name__ == '__main__':
     problem_name = 'directionality'
     problem_function = directionality_problem
 
+    json_foldername = os.path.join(root_path, 'optimization', 'json')
+    brute_force_file = os.path.join(json_foldername, 'brute_force_max.json')
+    brute_force_data = load_json(brute_force_file)
+    brute_force_max_directionality = brute_force_data['directionality'][1]
+
     pop_sizes = [5, 10, 20]
 
     results = []
@@ -86,6 +91,8 @@ if __name__ == '__main__':
     matplotlib.rcParams.update({'font.size': fontsize})
 
     fig = plt.figure(figsize=(12, 8))
+    ax = fig.add_subplot(111)
+
     for i in range(len(results)):
         data = np.array(results[i])
         x = range(1, data.shape[1] + 1)
@@ -94,7 +101,12 @@ if __name__ == '__main__':
         # yerr = data.std(axis=0) / np.sqrt(n_repeats)
         # plt.errorbar(x, y, yerr=yerr, linewidth=2, errorevery=20)
 
+    plt.plot([0, x[-1] + 1], [brute_force_max_directionality, brute_force_max_directionality], color='grey', linestyle='--')
+    text = 'Max achievable: ' + str(round(brute_force_max_directionality, 2))
+    ax.text(2, 7.9, text, color='grey', fontsize=15)
+
     plt.xlim([0, x[-1] + 1])
+    plt.ylim([4, 8.5])
 
     plt.xlabel('Experiment number', fontsize=fontsize)
     plt.ylabel('Fitness value', fontsize=fontsize)
