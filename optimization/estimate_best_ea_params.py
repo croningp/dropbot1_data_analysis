@@ -51,8 +51,8 @@ def movement_problem(individual):
 
 def scoring_function(logbook):
     end_median = scoring_function_end_median(logbook)
-    integral_median = scoring_function_integral_median(logbook)
-    return (end_median + integral_median) / 2.0
+    mean_median = scoring_function_mean_median(logbook)
+    return end_median + mean_median
 
 
 def scoring_function_end_max(logbook):
@@ -63,11 +63,11 @@ def scoring_function_end_median(logbook):
     return logbook[-1]['median']
 
 
-def scoring_function_integral_median(logbook):
+def scoring_function_mean_median(logbook):
     medians = []
     for i in range(len(logbook)):
         medians.append(logbook[i]['median'])
-    return np.sum(medians)
+    return np.mean(medians)
 
 
 def save_json_to_file(data, filename):
