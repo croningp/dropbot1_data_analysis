@@ -12,20 +12,21 @@ HERE_PATH = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe
 if __name__ == '__main__':
 
     fontsize = 22
+    makersize = 100
 
     fig, tax = ternary.figure(scale=1.0)
 
     x = [[0.1, 0.2, 0.7]]
-    tax.scatter(x, marker='D', color='g', label=x.__str__())
+    tax.scatter(x, marker='D', color='g', label=x.__str__(), s=makersize)
 
     x = [[0.1, 0, 0.9]]
-    tax.scatter(x, marker='s', color='r', label=x.__str__())
+    tax.scatter(x, marker='s', color='r', label=x.__str__(), s=makersize)
 
     x = [[0.3, 0.2, 0.5]]
-    tax.scatter(x, marker='o', color='b', label=x.__str__())
+    tax.scatter(x, marker='o', color='b', label=x.__str__(), s=makersize)
 
     x = [[0.4, 0.4, 0.2]]
-    tax.scatter(x, marker='h', color='m', label=x.__str__())
+    tax.scatter(x, marker='h', color='m', label=x.__str__(), s=makersize)
 
     # make the plot look good
     tax.boundary()
